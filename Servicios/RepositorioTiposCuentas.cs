@@ -1,4 +1,4 @@
-﻿// Ignore Spelling: Crear tipo Cuenta
+﻿// Ignore Spelling: Crear tipo Cuenta Existe
 
 using Dapper;
 using ManejoPresupuesto.Models;
@@ -10,6 +10,7 @@ namespace ManejoPresupuesto.Servicios
     public interface IRepositorioTiposCuentas
     {
         Task Crear(TipoCuenta tipoCuenta);
+        Task<bool> Existe(string Nombre, int UsuarioId);
     }
     public class RepositorioTiposCuentas : IRepositorioTiposCuentas
     {
@@ -24,11 +25,24 @@ namespace ManejoPresupuesto.Servicios
         { 
             using var connection = new SqlConnection(connectionString);
             var id = await connection.QuerySingleAsync<int>
-                                     ($@"INSERT INTO TiposCuentas (Nombre, UsuarioId, Orden)
+                                     (@"INSERT INTO TiposCuentas (Nombre, UsuarioId, Orden)
                                      Values (@Nombre, @UsuarioId, 0);
                                      SELECT SCOPE_IDENTITY();
                                      ",tipoCuenta);
             tipoCuenta.Id = id;
+        }
+
+            /* validando el campo para que no ingrese el mismo valor varias
+             * veces en la base de datos*/
+        public async Task<bool> Existe(string Nombre, int UsuarioId)
+        {
+            using var connection = new SqlConnection(connectionString);
+            var existe = await connection.QueryFirstOrDefaultAsync<int>
+                                        (@"SELECT 1 FROM TiposCuentas
+                                        WHERE Nombre = @Nombre AND
+                                        UsuarioId = @UsuarioId", new { Nombre, UsuarioId });
+
+            return existe ==  1;
         }
     }
 }
