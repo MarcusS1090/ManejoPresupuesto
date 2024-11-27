@@ -69,6 +69,13 @@ namespace ManejoPresupuesto.Controllers
         }
 
         [HttpGet]
+        public async Task<ActionResult> Editar (int id)
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var tipoCuenta = await repositorioTiposCuentas.ObtenerPorId(id, usuarioId);
+        }
+
+        [HttpGet]
         public async Task<IActionResult> VerificarExisteTipoCuenta(string nombre)
         {
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
