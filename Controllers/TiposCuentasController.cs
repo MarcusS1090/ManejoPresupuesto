@@ -68,12 +68,67 @@ namespace ManejoPresupuesto.Controllers
             return RedirectToAction("Index");
         }
 
+        
+        
         [HttpGet]
         public async Task<ActionResult> Editar (int id)
         {
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
             var tipoCuenta = await repositorioTiposCuentas.ObtenerPorId(id, usuarioId);
+            if (tipoCuenta is null)
+            {
+                return RedirectToAction("No encontrado", "Home");
+            }
+
+            return View(tipoCuenta);
+
         }
+
+        [HttpPost]
+        public async Task<ActionResult> Editar (TipoCuenta tipoCuenta)
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var tipoCuentaExiste = await repositorioTiposCuentas.ObtenerPorId(tipoCuenta.Id, usuarioId);
+
+            if (tipoCuentaExiste is null)
+            {
+                return RedirectToAction("No Encontrado", "Home");
+            }
+
+            await repositorioTiposCuentas.Actualizar(tipoCuenta);
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var tipoCuenta = await repositorioTiposCuentas.ObtenerPorId(id, usuarioId);
+
+            if (tipoCuenta is null)
+            {
+                return RedirectToAction("No encontrado", "Home");
+            }
+
+            return View(tipoCuenta);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> EliminarTipoCuenta(int id)
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var tipoCuenta = await repositorioTiposCuentas.ObtenerPorId(id, usuarioId);
+
+            if (tipoCuenta is null)
+            {
+                return RedirectToAction("No encontrado", "Home");
+            }
+
+            await repositorioTiposCuentas.Eliminar(id);
+            return RedirectToAction("Index");
+        }
+
+
+
 
         [HttpGet]
         public async Task<IActionResult> VerificarExisteTipoCuenta(string nombre)
