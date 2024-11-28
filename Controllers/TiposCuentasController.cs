@@ -142,7 +142,35 @@ namespace ManejoPresupuesto.Controllers
             }
         return Json(true);
         }
-       }
 
+        /// <summary>
+        /// The function "Ordenar" in C# asynchronously sorts an array of integers received in the
+        /// request body.
+        /// </summary>
+        /// <param name="ids">The parameter "ids" in the method signature represents an array of
+        /// integers that are passed in the request body when calling the "Ordenar" method. The method
+        /// is expected to be an asynchronous task that returns an IActionResult.</param>
+        [HttpPost]
+        public async Task<IActionResult> Ordenar([FromBody] int[] ids)
+        {
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+            var tiposCuentas = await repositorioTiposCuentas.Obtener(usuarioId);
+            var idsTiposCuentas = tiposCuentas.Select(x => x.Id);
+            
+            var idsTiposCuentasNoPertenecenAlUsuario = ids.Except(idsTiposCuentas).ToList();
+            
+            if (idsTiposCuentasNoPertenecenAlUsuario.Count > 0)
+            {
+                return Forbid();
+            }
 
+            var tiposCuentasOrdenados = ids.Select((valor, indice)
+                => new TipoCuenta() { Id = valor, Orden = indice + 1 }).AsEnumerable();
+
+            await repositorioTiposCuentas.Ordenar(tiposCuentasOrdenados);
+
+            return Ok();
+        }
+
+    }
 }

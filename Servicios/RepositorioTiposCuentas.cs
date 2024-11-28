@@ -3,6 +3,7 @@
 using Dapper;
 using ManejoPresupuesto.Models;
 using Microsoft.Data.SqlClient;
+using System.Data;
 
 
 namespace ManejoPresupuesto.Servicios
@@ -15,6 +16,7 @@ namespace ManejoPresupuesto.Servicios
         Task<bool> Existe(string Nombre, int UsuarioId);
         Task<IEnumerable<TipoCuenta>> Obtener(int usuarioId);
         Task<TipoCuenta> ObtenerPorId(int id, int usuarioId);
+        Task Ordenar(IEnumerable<TipoCuenta> tiposCuentaOrdenados);
     }
     public class RepositorioTiposCuentas : IRepositorioTiposCuentas
     {
@@ -29,10 +31,11 @@ namespace ManejoPresupuesto.Servicios
         { 
             using var connection = new SqlConnection(connectionString);
             var id = await connection.QuerySingleAsync<int>
-                                     (@"INSERT INTO TiposCuentas (Nombre, UsuarioId, Orden)
-                                     Values (@Nombre, @UsuarioId, 0);
-                                     SELECT SCOPE_IDENTITY();
-                                     ",tipoCuenta);
+                                     ("TipoCuentas_Insertar",
+                                     new
+                                     {
+                                         usuarioId = tipoCuenta.UsuarioId,
+                                         nombre = tipoCuenta.Nombre}, commandType: System.Data.CommandType.StoredProcedure);
             tipoCuenta.Id = id;
         }
 
@@ -54,7 +57,8 @@ namespace ManejoPresupuesto.Servicios
             using var connection = new SqlConnection (connectionString);
             return await connection.QueryAsync<TipoCuenta>(
                                     @"SELECT Id, Nombre, Orden FROM TiposCuentas
-                                    WHERE UsuarioId = @UsuarioId", new { usuarioId });
+                                    WHERE UsuarioId = @UsuarioId ORDER BY Orden",
+                                    new { usuarioId });
         }
 
         public async Task Actualizar(TipoCuenta tipocuenta)
@@ -82,5 +86,14 @@ namespace ManejoPresupuesto.Servicios
             using var connection = new SqlConnection(connectionString);
             await connection.ExecuteAsync("DELETE TiposCuentas WHERE Id = @Id", new {id});
         }
+
+        public async Task Ordenar(IEnumerable<TipoCuenta> tiposCuentaOrdenados)
+        {
+            var query = "UPDATE  TiposCuentas SET Orden = @Orden WHERE Id = @Id";
+            using var connection = new SqlConnection (connectionString);
+            await connection.ExecuteAsync(query, tiposCuentaOrdenados);
+        }
     }
+
+    
 }
