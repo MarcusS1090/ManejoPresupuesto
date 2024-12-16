@@ -12,10 +12,17 @@ namespace ManejoPresupuesto.Models
         [StringLength(maximumLength:50)]
         [PrimeraLetraMayuscula]
         public string Nombre { get; set; }
-        [Display(Name = "Tipo de la cuenta")]
+        [Display(Name = "Escoje cual cuenta")]
         public int TipoCuentaId { get; set; }
         public decimal Balance { get; set; }
-        [StringLength(maximumLength: 1000, MinimumLength = 1)]
+        [StringLength(maximumLength: 1000)]
         public string Descripcion { get; set; }
+
+        public string TipoCuenta { get; set; }
+
+        internal static decimal Sum(Func<object, object> value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
