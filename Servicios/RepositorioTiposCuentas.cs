@@ -15,6 +15,7 @@ namespace ManejoPresupuesto.Servicios
         Task Eliminar(int id);
         Task<bool> Existe(string Nombre, int UsuarioId);
         Task<IEnumerable<TipoCuenta>> Obtener(int usuarioId);
+        Task Obtener();
         Task<TipoCuenta> ObtenerPorId(int id, int usuarioId);
         Task Ordenar(IEnumerable<TipoCuenta> tiposCuentaOrdenados);
     }
@@ -92,6 +93,11 @@ namespace ManejoPresupuesto.Servicios
             var query = "UPDATE  TiposCuentas SET Orden = @Orden WHERE Id = @Id";
             using var connection = new SqlConnection (connectionString);
             await connection.ExecuteAsync(query, tiposCuentaOrdenados);
+        }
+
+        public Task Obtener()
+        {
+            throw new NotImplementedException();
         }
     }
 
