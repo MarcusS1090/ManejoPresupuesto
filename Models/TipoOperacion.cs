@@ -3,7 +3,7 @@
     public enum TipoOperacion
     {
         Ingreso = 1,
-        Gasto = 2
+        Gasto = 2,
     }
 
 
