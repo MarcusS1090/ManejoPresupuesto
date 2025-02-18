@@ -21,11 +21,11 @@ namespace ManejoPresupuesto.Models
         [StringLength(maximumLength: 1000, ErrorMessage = "La nota no puede pasar de {1} caracteres")]
         public string Nota { get; set; }
         
+        [Range(1, maximum: int.MaxValue, ErrorMessage = "Debe Seleccionar una cuenta")]
         [Display(Name = "Cuenta")]
         public int CuentaId { get; set; }
 
-
-        [Range(1, maximum: int.MaxValue, ErrorMessage = "Debe Seleccionar una cuenta")]
-        public int tipoOperacionId { get; set; }
+        [Display(Name = "Tipo de operacion")]
+        public TipoOperacion TipoOperacionId { get; set; } = TipoOperacion.Gasto;
     }
 }
