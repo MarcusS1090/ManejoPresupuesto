@@ -1,7 +1,7 @@
 ﻿
 
 
-// Ignore Spelling: Presupuesto cuenta
+// Ignore Spelling: Presupuesto cuenta Detalle
 
 using System;
 using AutoMapper;
@@ -62,7 +62,7 @@ namespace ManejoPresupuesto.Controllers
             DateTime fechaInicio;
             DateTime fechaFin;
 
-            if (mes <= 0 || mes >= 12 || año <= 1900)
+            if (mes <= 0 || mes > 12 || año <= 1900)
             {
                 var hoy = DateTime.Today;
                 fechaInicio = new DateTime(hoy.Year, hoy.Month, 1);
@@ -87,6 +87,7 @@ namespace ManejoPresupuesto.Controllers
 
             var modelo = new ReporteTransaccionesDetalladas();
             ViewBag.Cuenta = cuenta.Nombre;
+
             var transaccionesPorFecha = transacciones.OrderByDescending(x => x.FechaTransaccion)
                 .GroupBy(x => x.FechaTransaccion)
                 .Select(grupo => new ReporteTransaccionesDetalladas.TransaccionesPorFecha()
@@ -95,9 +96,16 @@ namespace ManejoPresupuesto.Controllers
                     Transacciones = grupo.AsEnumerable()
                 });
 
-            modelo.TransaccionAgrupadas = transaccionesPorFecha;
+            modelo.TransaccionesAgrupadas = transaccionesPorFecha;
             modelo.FechaInicio = fechaInicio;
             modelo.FechaFin = fechaFin;
+
+            ViewBag.mesAnterior = fechaInicio.AddMonths(-1).Month;
+            ViewBag.mesPosterior = fechaInicio.AddMonths(1).Month;
+
+            ViewBag.añoAnterior = fechaInicio.AddMonths(-1).Year;
+            ViewBag.añoPosterior = fechaInicio.AddMonths(1).Year;
+            
 
             return View(modelo);
         }

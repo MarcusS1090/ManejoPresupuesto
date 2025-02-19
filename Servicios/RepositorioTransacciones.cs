@@ -43,7 +43,7 @@ namespace ManejoPresupuesto.Servicios
         { 
             using var connection = new SqlConnection(connectionString);
             return await connection.QueryAsync<Transaccion>(
-                @"SELECT t.Id, t.Monto, t.FechaInicio,
+                @"SELECT t.Id, t.Monto, t.FechaTransaccion,
                 c.Nombre as Categoria, cu.Nombre as Cuenta,
                 c.TipoOperacionId
                 FROM Transacciones t
@@ -52,8 +52,7 @@ namespace ManejoPresupuesto.Servicios
                 INNER JOIN Cuentas cu
                 ON cu.Id = t.cuentaId
                 WHERE t.cuentaId = @cuentaId AND t.UsuarioId = @UsuarioId
-                AND FechaTransaccion BETWEEN @FechaInicio AND @FechaFin
-                ", modelo);
+                AND FechaTransaccion BETWEEN @FechaInicio AND @FechaFin", modelo);
         }
 
         public async Task Actualizar(Transaccion transaccion, decimal montoAnterior, int cuentaAnteriorId)
