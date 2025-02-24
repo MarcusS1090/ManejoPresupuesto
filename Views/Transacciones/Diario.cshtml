@@ -1,0 +1,8 @@
+﻿@model SubMenuTransacciones
+
+@{
+    ViewData["Title"] = "Reporte semanal";
+}
+
+<partial name="_SubMenu" Model="SubMenuTransacciones.Diario" />
+<partial name="_ReporteTransaccionesDetalladas" model="Model" />

@@ -5,6 +5,7 @@ namespace ManejoPresupuesto.Servicios
 {
     public interface IServicioReportes
     {
+        Task<IEnumerable<ResultadoObtenerPorSemana>> ObtenerReporteSemanal(int usuarioId, int mes, int año, dynamic ViewBag);
         Task<ReporteTransaccionesDetalladas> 
             ObtenerReporteTransaccionesDetalladasPorCuenta(int usuarioId,
             int cuentaId, int mes, int año, dynamic ViewBag);
@@ -16,6 +17,33 @@ namespace ManejoPresupuesto.Servicios
         private readonly IRepositorioTransacciones repositorioTransacciones;
         private readonly HttpContext httpContext;
 
+        public ServicioReportes(IRepositorioTransacciones repositorioTransacciones,
+            IHttpContextAccessor httpContextAccessor) 
+        { 
+
+            this.repositorioTransacciones = repositorioTransacciones;
+            this.httpContext = httpContextAccessor.HttpContext;
+        }
+
+        public async Task<IEnumerable<ResultadoObtenerPorSemana>>
+            ObtenerReporteSemanal(int usuarioId, int mes, int año, dynamic ViewBag)
+        {
+            (DateTime fechaInicio, DateTime fechaFin) = GenerarFechaInicioYFin(mes, año);
+
+            var parametro = new ParametroObtenerTransaccionesPorUsuario()
+            {
+                FechaInicio = fechaInicio,
+                FechaFin = fechaFin,
+                UsuarioId = usuarioId,
+            };
+
+            AsignarValoresAlViewBag(ViewBag, fechaInicio);
+
+            var modelo = await repositorioTransacciones.ObtenerPorSemana(parametro);
+
+            return modelo;
+        }
+
         public async Task<ReporteTransaccionesDetalladas> 
             ObtenerTransaccionesDetalladas(int usuarioId, int mes, int año, dynamic ViewBag)
         {
@@ -26,8 +54,6 @@ namespace ManejoPresupuesto.Servicios
                 FechaInicio = fechaInicio,
                 FechaFin = fechaFin,
                 UsuarioId = usuarioId,
-
-
             };
 
             var transacciones = await repositorioTransacciones.ObtenerPorUsuarioId(parametro);
@@ -38,13 +64,6 @@ namespace ManejoPresupuesto.Servicios
 
             return modelo;
 
-        }
-        public ServicioReportes(IRepositorioTransacciones repositorioTransacciones,
-            IHttpContextAccessor httpContextAccessor) 
-        { 
-
-            this.repositorioTransacciones = repositorioTransacciones;
-            this.httpContext = httpContextAccessor.HttpContext;
         }
 
         public async Task<ReporteTransaccionesDetalladas>
