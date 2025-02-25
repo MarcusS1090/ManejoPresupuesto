@@ -61,15 +61,15 @@ namespace ManejoPresupuesto.Controllers
                 await servicioReportes.ObtenerReporteSemanal(usuarioId, mes, año, ViewBag);
 
             var agrupado = transaccionesPorSemana.GroupBy(x => x.Semana).Select(x =>
-            new ResultadoObtenerPorSemana()
-            {
-                Semana = x.Key,
-                Ingresos = x.Where(x => x.TipoOperacionId == TipoOperacion.Ingreso).
-                Select(x => x.Monto).FirstOrDefault(),
-                Gastos = x.Where(x => x.TipoOperacionId == TipoOperacion.Gasto).
-                Select(x => x.Monto).FirstOrDefault()
+                new ResultadoObtenerPorSemana()
+                {
+                    Semana = x.Key,
+                    Ingresos = x.Where(x => x.TipoOperacionId == TipoOperacion.Ingreso)
+                    .Select(x => x.Monto).FirstOrDefault(),
+                    Gastos = x.Where(x => x.TipoOperacionId == TipoOperacion.Gasto)
+                    .Select(x => x.Monto).FirstOrDefault()
 
-            }).ToList();
+                }).ToList();
 
             if (año == 0 || mes == 0)
             {
@@ -86,24 +86,24 @@ namespace ManejoPresupuesto.Controllers
             for (int i = 0; i < diasSegmentados.Count; i++)
             {
                 var semana = i + 1;
-                var fechaInicio = new DateTime(año, mes, diasSegmentados[1].First());
-                var fechaFin = new DateTime(año, mes, diasSegmentados[1].Last());
+                var fechaInicio = new DateTime(año, mes, diasSegmentados[i].First());
+                var fechaFin = new DateTime(año, mes, diasSegmentados[i].Last());
                 var grupoSemana = agrupado.FirstOrDefault(x => x.Semana == semana);
 
                 if (grupoSemana is null)
                 {
                     agrupado.Add(new ResultadoObtenerPorSemana()
                     {
-                        Semana = semana,
-                        FechaFin = fechaFin,
                         FechaInicio = fechaInicio,
+                        FechaFin = fechaFin,
+                        Semana = semana,
                     });
                 }
                 else
                 { 
-                    grupoSemana.Semana = semana;
                     grupoSemana.FechaInicio = fechaInicio;
                     grupoSemana.FechaFin = fechaFin;
+                    grupoSemana.Semana = semana;
                 }
             }
 

@@ -110,16 +110,15 @@ namespace ManejoPresupuesto.Servicios
         {
             using var connection = new SqlConnection(connectionString);
 
-            return await connection.QueryAsync<ResultadoObtenerPorSemana>
-                (@"SELECT datediff(d, @FechaInicio, FechaTransaccion) / 7 + 1 as Semana,
+            return await connection.QueryAsync<ResultadoObtenerPorSemana>(@"
+                SELECT datediff(d, @fechaInicio, FechaTransaccion) / 7 + 1 as Semana,
                 SUM(Monto) as Monto, cat.TipoOperacionId
                 FROM Transacciones
                 INNER JOIN Categorias cat
                 ON cat.Id = Transacciones.CategoriaId
-                WHERE Transacciones.UsuarioId = @UsuarioId 
-                AND 
-                FechaTransaccion BETWEEN @FechaInicio AND @FechaFin
-                GROUP BY DATEDIFF(d, @FechaInicio, FechaTransaccion) / 7,cat.TipoOperacionId", modelo);
+                WHERE Transacciones.UsuarioId = @UsuarioId  AND 
+                FechaTransaccion BETWEEN @fechaInicio AND @fechaFin
+                GROUP BY datediff(d, @fechaInicio, FechaTransaccion) / 7, cat.TipoOperacionId", modelo);
         }
 
         public async Task Borrar(int id)
