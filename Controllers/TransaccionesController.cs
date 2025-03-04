@@ -177,20 +177,59 @@ namespace ManejoPresupuesto.Controllers
         [HttpGet]
         public async Task<FileResult> ExportarExcelPorMes(int mes, int año)
         {
-            var fechaIncio = new DateTime(año, mes, 1);
-            var fechaFin = fechaIncio.AddMonths(1).AddDays(-1);
+            var fechaInicio = new DateTime(año, mes, 1);
+            var fechaFin = fechaInicio.AddMonths(1).AddDays(-1);
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
 
             var transacciones  = await repositorioTransacciones
                 .ObtenerPorUsuarioId(new ParametroObtenerTransaccionesPorUsuario
                 {
                     UsuarioId = usuarioId,
-                    FechaInicio = fechaIncio,
+                    FechaInicio = fechaInicio,
                     FechaFin = fechaFin,
                 });
 
-            var nombreArchivo = $"Manejo Presupuesto - {fechaIncio.ToString("MMMM yyy")}.xlsx";
+            var nombreArchivo = $"Manejo Presupuesto - {fechaInicio.ToString("MMMM yyy")}.xlsx";
 
+            return GenerarExcel(nombreArchivo, transacciones);
+        }
+
+        [HttpGet]
+        public async Task<FileResult> ExportarExcelPorAño(int año)
+        {
+            var fechaInicio = new DateTime(año, 1, 1);
+            var fechaFin = fechaInicio.AddYears(1).AddDays(1);
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+
+            var transacciones = await repositorioTransacciones
+                .ObtenerPorUsuarioId(new ParametroObtenerTransaccionesPorUsuario
+                {
+                    UsuarioId = usuarioId,
+                    FechaInicio = fechaInicio,
+                    FechaFin = fechaFin,
+                });
+
+            var nombreArchivo = $"Manejo presupuesto - {fechaInicio.ToString("yyyy")}.xlsx";
+
+            return GenerarExcel(nombreArchivo, transacciones);
+        }
+
+        [HttpGet]
+        public async Task<FileResult> ExportarExcelTodo()
+        {
+            var fechaInicio = DateTime.Today.AddYears(-10);
+            var fechaFin = DateTime.Today.AddYears(10);
+            var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+
+            var transacciones = await repositorioTransacciones
+                .ObtenerPorUsuarioId(new ParametroObtenerTransaccionesPorUsuario
+                {
+                    UsuarioId = usuarioId,
+                    FechaInicio = fechaInicio,
+                    FechaFin = fechaFin,
+                });
+
+            var nombreArchivo = $"Manejo Presupuestos - {DateTime.Today.ToString("dddd-MMMM-yyy")}.xlsx";
             return GenerarExcel(nombreArchivo, transacciones);
         }
 
