@@ -115,6 +115,7 @@ namespace ManejoPresupuesto.Controllers
 
             return View(modelo);
         }
+
         public async Task<IActionResult> Mensual(int año) 
         {
             var usuarioId = servicioUsuarios.ObtenerUsuarioId();
@@ -128,15 +129,15 @@ namespace ManejoPresupuesto.Controllers
 
             var transaccionesAgrupadas = transaccionesPorMes.GroupBy(x => x.Mes)
                 .Select(x => new ResultadoObtenerPorMes()
-                { 
+                {
                     Mes = x.Key,
                     Ingreso = x.Where(x => x.TipoOperacionId == TipoOperacion.Ingreso)
-                    .Select(x=> x.Monto).FirstOrDefault(),
+                    .Select(x => x.Monto).FirstOrDefault(),
                     Gasto = x.Where(x => x.TipoOperacionId == TipoOperacion.Gasto)
                     .Select(x => x.Monto).FirstOrDefault(),
                 }).ToList();
 
-            for (int mes = 1; mes < 12; mes++)
+            for (int mes = 1; mes <= 12; mes++)
             {
                 var transaccion = transaccionesAgrupadas.FirstOrDefault(x => x.Mes == mes);
                 var fechaReferencia = new DateTime(año, mes, 1);
@@ -145,22 +146,22 @@ namespace ManejoPresupuesto.Controllers
                 {
                     transaccionesAgrupadas.Add(new ResultadoObtenerPorMes()
                     {
-                        Mes = mes,
-                        FechaReferencia = fechaReferencia,
+                        Mes= mes,
+                        FechaReferencia= fechaReferencia,
                     });
-
+                    
                 }
                 else
-                { 
+                {
                     transaccion.FechaReferencia = fechaReferencia;
                 }
             }
 
-            transaccionesAgrupadas = transaccionesAgrupadas.OrderByDescending(x => x.Mes).ToList();
-            
+            transaccionesAgrupadas = transaccionesAgrupadas.OrderBy(x => x.Mes).ToList();
+
             var modelo = new ReporteMensualViewModel();
             modelo.Año = año;
-            modelo.TransaccionesPorMes = transaccionesPorMes;
+            modelo.TransaccionesPorMes = transaccionesAgrupadas;
 
             return View(modelo);
         }
