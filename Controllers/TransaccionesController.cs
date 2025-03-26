@@ -278,6 +278,30 @@ namespace ManejoPresupuesto.Controllers
             return View();
         }
 
+       public async Task<JsonResult> ObtenerTransaccionesCalendario(DateTime start, 
+           DateTime end)
+       {
+           var usuarioId = servicioUsuarios.ObtenerUsuarioId();
+       
+           var transacciones = await repositorioTransacciones
+               .ObtenerPorUsuarioId(new ParametroObtenerTransaccionesPorUsuario
+               {
+                   UsuarioId = usuarioId,
+                   FechaInicio = start,
+                   FechaFin = end,
+               });
+
+            var eventosCalendario = transacciones.Select(transaccion => new EventoCalendario()
+            { 
+                Title = transaccion.Monto.ToString("N"),
+                Start = transaccion.FechaTransaccion.ToString("yyyy-MMM-dd"),
+                End = transaccion.FechaTransaccion.ToString("yyyy-MMM-dd"),
+                Color = (transaccion.TipoOperacionId == TipoOperacion.Gasto) ? "Red" : null,
+            });
+
+            return Json(eventosCalendario);
+       }
+
 
         [HttpPost]
         public async Task<IActionResult> Borrar(int id, string urlRetorno = null)
