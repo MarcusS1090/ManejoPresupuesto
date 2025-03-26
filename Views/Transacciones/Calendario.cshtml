@@ -8,8 +8,6 @@
 <div id="calendario"></div>
 
 @section Scripts {
-    <script src='fullcalendar/core/index.global.js'></script>
-    <script src='fullcalendar/core/locales/es.global.js'></script>
     <script src="~/lib/fullcalendar/main.min.js"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -19,7 +17,7 @@
                 locale: 'es',
                 dayMaxEventRows: 3,
                 initialView: 'dayGridMonth',
-                events:'/transacciones/ObtenerTransaccionesCalendario'
+                events: '/transacciones/ObtenerTransaccionesCalendario',
                     
             });
 
