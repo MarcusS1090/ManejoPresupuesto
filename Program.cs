@@ -1,4 +1,6 @@
+using ManejoPresupuesto.Models;
 using ManejoPresupuesto.Servicios;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +14,16 @@ builder.Services.AddTransient<IRepositorioTransacciones, RepositorioTransaccione
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddTransient<IServicioReportes, ServicioReportes>();
 builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddTransient<IRepositorioUsuarios, RepositorioUsuarios>();
+builder.Services.AddTransient<IUserStore<Usuario>, UsuarioStore>();
+builder.Services.AddIdentityCore<Usuario>(opciones =>
+{ 
+    opciones.Password.RequireDigit = false;
+    opciones.Password.RequireLowercase = false;
+    opciones.Password.RequireUppercase = false;
+    opciones.Password.RequireNonAlphanumeric = false;
+});
+
 
 var app = builder.Build();
 
