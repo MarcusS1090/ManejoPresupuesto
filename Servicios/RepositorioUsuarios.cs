@@ -21,13 +21,16 @@ namespace ManejoPresupuesto.Servicios
         public async Task<int> CrearUsuario(Usuario usuario)
         {
             using var connection = new SqlConnection(connectiongString);
-            var id = await connection.QuerySingleAsync<int>(@"
+            var usuarioId = await connection.QuerySingleAsync<int>(@"
                     INSERT INTO Usuarios (Email,EmailNormalizado,PasswordHash) 
                     VALUES (@Email,@EmailNormalizado,@PasswordHash);
                     SELECT SCOPE_IDENTITY();
                     ", usuario);
 
-            return id;
+            await connection.ExecuteAsync("CrearDatosUsuarioNuevo", new { usuarioId },
+                commandType: System.Data.CommandType.StoredProcedure);
+
+            return usuarioId;
         }
 
         public async Task<Usuario> BuscarUsuarioPorEmail(string emailNormalizado)

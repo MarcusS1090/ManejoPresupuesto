@@ -1,5 +1,6 @@
 ﻿using ManejoPresupuesto.Models;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,12 +17,15 @@ namespace ManejoPresupuesto.Controllers
             this.userManager = userManager;
             this.signInManager = signInManager;
         }
+
+        [AllowAnonymous]
         public IActionResult Registro()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Registro(RegistroViewModel modelo)
         {
             if (!ModelState.IsValid)
@@ -40,7 +44,6 @@ namespace ManejoPresupuesto.Controllers
 
             if (resultado.Succeeded)
             {
-                await signInManager.SignInAsync(usuario, isPersistent:true);
                 return RedirectToAction("Index", "Transacciones");
             }
             else
@@ -54,12 +57,14 @@ namespace ManejoPresupuesto.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Login()
         {
             return View();
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel modelo)
         {
             if (!ModelState.IsValid)
