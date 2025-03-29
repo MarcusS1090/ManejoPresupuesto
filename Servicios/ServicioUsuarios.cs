@@ -23,12 +23,12 @@ namespace ManejoPresupuesto.Servicios
             {
                 var idClaim = httpContext.User.Claims.Where(x => x.Type == ClaimTypes.NameIdentifier).FirstOrDefault();
                 var id = int.Parse(idClaim.Value);
+                return id;
             }
             else
             {
                 throw new ApplicationException("El usuario no está autenticado");
             }
-            return 1;
         }
     }
 }
