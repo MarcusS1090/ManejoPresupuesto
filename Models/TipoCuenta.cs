@@ -16,7 +16,7 @@ namespace ManejoPresupuesto.Models
         [Required(ErrorMessage = "El campo {0} es requerido")]
         [Display (Name = "Nombre del tipo de cuenta")]
         [PrimeraLetraMayuscula]
-        [Microsoft.AspNetCore.Mvc.Remote(action: "VerificarExisteTipoCuenta",controller: "TiposCuentas")]
+        [Microsoft.AspNetCore.Mvc.Remote(action: "VerificarExisteTipoCuenta", controller: "TiposCuentas", AdditionalFields = nameof(Id))]
 
         public string Nombre { get; set; }
         public int UsuarioId { get; set; }

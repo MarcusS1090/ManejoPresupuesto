@@ -13,7 +13,7 @@ namespace ManejoPresupuesto.Servicios
         Task Actualizar(TipoCuenta tipocuenta);
         Task Crear(TipoCuenta tipoCuenta);
         Task Eliminar(int id);
-        Task<bool> Existe(string Nombre, int UsuarioId);
+        Task<bool> Existe(string Nombre, int UsuarioId, int id = 0);
         Task<IEnumerable<TipoCuenta>> Obtener(int usuarioId);
         Task Obtener();
         Task<TipoCuenta> ObtenerPorId(int id, int usuarioId);
@@ -42,13 +42,13 @@ namespace ManejoPresupuesto.Servicios
 
             /* validando el campo para que no ingrese el mismo valor varias
              * veces en la base de datos*/
-        public async Task<bool> Existe(string Nombre, int UsuarioId)
+        public async Task<bool> Existe(string Nombre, int UsuarioId, int id = 0)
         {
             using var connection = new SqlConnection(connectionString);
             var existe = await connection.QueryFirstOrDefaultAsync<int>
                                         (@"SELECT 1 FROM TiposCuentas
                                         WHERE Nombre = @Nombre AND
-                                        UsuarioId = @UsuarioId", new { Nombre, UsuarioId });
+                                        UsuarioId = @UsuarioId AND Id <> @id", new { Nombre, UsuarioId, id });
 
             return existe ==  1;
         }
