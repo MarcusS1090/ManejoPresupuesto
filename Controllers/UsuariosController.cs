@@ -129,5 +129,53 @@ namespace ManejoPresupuesto.Controllers
             await servicioEmail.EnviarEmailCambioPassword(modelo.Email, enlace);
             return View();
         }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult RecuperarPassword(string codigo = null)
+        {
+            if (codigo is null)
+            {
+                var mensaje = "Codigo no encontrado";
+                return RedirectToAction("OlvideMiPassword", new { mensaje });
+            }
+
+            var modelo = new RecuperarPasswordViewModel();
+            modelo.CodigoReseteo = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(codigo));
+            return View(modelo);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<IActionResult> RecuperarPassword(RecuperarPasswordViewModel modelo)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(modelo);
+            }
+            var usuario = await userManager.FindByEmailAsync(modelo.Email);
+            if (usuario is null)
+            {
+                return RedirectToAction("Password cambiado");
+            }
+            var resultado = await userManager.ResetPasswordAsync(usuario, modelo.CodigoReseteo, modelo.Password);
+            if (resultado.Succeeded)
+            {
+                return RedirectToAction("Login");
+            }
+            else
+            {
+                foreach (var error in resultado.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+                return View(modelo);
+            }
+        }
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult PasswordCambiado()
+        {
+            return View();
+        }
     }
 }
